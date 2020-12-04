@@ -2,18 +2,19 @@ import pyxel
 from enum import Enum
 from random import *
 
-DEBUGGING = True
+DEBUGGING = 1
 
 CANVAS_SIZE = 256;
 CANVAS_PADDING = 20;
-TILE_PADDING_MIN = 1;
+TILE_PADDING_MIN = 2;
 TILE_PADDING_MAX = 16;
 # HOVER_SCALE = 1.1;
 # TWEEN_SPEED = .08;
+PALETTE_START = 1
+PALETTE_END = 15
 PALETTE = [
     0xFFFFFF, # WHITE - 0
-    0x000000, # BLACK - 1
-    0xA200FF, # PURPLE - 2
+    0xA200FF, # PURPLE - 1
     0xFF0097, # MAGENTA
     0x008D6D, # TEAL
     0x8CBF26, # LIME
@@ -22,11 +23,12 @@ PALETTE = [
     0xF09609, # ORANGE
     0x1BA1E2, # BLUE
     0xE51400, # RED
-    0x339933, # GREEN - 11
-    0x000000, # BLACK
-    0x000000, # BLACK
-    0x000000, # BLACK
-    0x000000, # BLACK
+    0x339933, # GREEN - 11 (original limit)
+    0xa3ff78, # NEON GREEN
+    0xfcf50f, # YELLOW
+    0x788aff, # SKY BLUE
+    0xababab, # GRAY
+    0x8dd1f0, # SKY BLUE - 15
 ]
 
 class Scene(Enum):
@@ -35,7 +37,7 @@ class Scene(Enum):
 
 class App:
     def __init__(self):
-        pyxel.init(CANVAS_SIZE, CANVAS_SIZE, caption="metro", palette=PALETTE)
+        pyxel.init(CANVAS_SIZE, CANVAS_SIZE, caption="metro", palette=PALETTE, scale=4)
         pyxel.mouse(True)
 
         self.new_game()
@@ -61,10 +63,11 @@ class App:
             Scene.GAME_OVER: lambda: None
         }
         scene_map[scene]()
+        
 
 class Game:
     def __init__(self):
-        self.color_order = [c for c in range(2,12)]
+        self.color_order = [c for c in range(PALETTE_START, PALETTE_END+1)]
         shuffle(self.color_order)
         self.used_colors = [self.color_order[0]]
         del self.color_order[0]
@@ -94,20 +97,21 @@ class Level:
 
         # determine values for drawing/collision
         play_area = CANVAS_SIZE - CANVAS_PADDING * 2
-        tile_padding = max(TILE_PADDING_MIN, min(TILE_PADDING_MAX, play_area / (self.grid_size - 1) * .1))
-        tile_size = (play_area - (self.grid_size - 1) * tile_padding) / self.grid_size
+        tile_padding = max(TILE_PADDING_MIN, min(TILE_PADDING_MAX, play_area / (self.grid_size - 1) * .1)) // 1
+        tile_size = (play_area - (self.grid_size - 1) * tile_padding) // self.grid_size
+        play_area_padding = (play_area - ((tile_size + tile_padding) * self.grid_size - tile_padding)) // 2
 
         # generate all tiles (colors, grid position)
         for i in range(self.grid_size):
             row = []
             for j in range(self.grid_size):
                 # add a random color tile (excluding the new color)
-                tile = Tile(choice(colors[:-1]), i, j, tile_size, tile_padding)
+                tile = Tile(choice(colors[:-1]), i, j, tile_size, tile_padding, play_area_padding)
                 row.append(tile)
             self.grid.append(row)
         
         # change one of the tiles to the new color
-        tile = Tile(colors[-1], randrange(self.grid_size), randrange(self.grid_size), tile_size, tile_padding)
+        tile = Tile(colors[-1], randrange(self.grid_size), randrange(self.grid_size), tile_size, tile_padding, play_area_padding)
         tile.correct = True
         self.grid[tile.grid_x][tile.grid_y] = tile
 
@@ -122,14 +126,14 @@ class Level:
                 tile.draw()
 
 class Tile:
-    def __init__(self, color, x, y, tile_size, tile_padding):
+    def __init__(self, color, x, y, tile_size, tile_padding, play_area_padding):
         self.color = color
         self.grid_x = x
         self.grid_y = y
         self.correct = False
 
-        self.x = CANVAS_PADDING + self.grid_x * (tile_size + tile_padding)
-        self.y = CANVAS_PADDING + self.grid_y * (tile_size + tile_padding)
+        self.x = CANVAS_PADDING + self.grid_x * (tile_size + tile_padding) + play_area_padding
+        self.y = CANVAS_PADDING + self.grid_y * (tile_size + tile_padding) + play_area_padding
         self.w = tile_size
         self.h = tile_size
 
@@ -143,6 +147,6 @@ class Tile:
     def draw(self):
         pyxel.rect(self.x, self.y, self.w, self.h, self.color)
         if DEBUGGING and self.correct:
-            pyxel.rect(self.x, self.y, 6, 6, 1)
+            pyxel.rect(self.x, self.y, 6, 6, 0)
 
 app = App()
