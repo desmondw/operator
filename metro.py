@@ -4,17 +4,42 @@ from random import *
 
 DEBUGGING = 1
 
-CANVAS_SIZE = 256;
-CANVAS_PADDING = 20;
-TILE_PADDING_MIN = 2;
-TILE_PADDING_MAX = 16;
-# HOVER_SCALE = 1.1;
-# TWEEN_SPEED = .08;
-PALETTE_START = 1
+CANVAS_SIZE = 256
+CANVAS_PADDING = 20
+TILE_PADDING_MIN = 2
+TILE_PADDING_MAX = 16
+# HOVER_SCALE = 1.1
+# TWEEN_SPEED = .08
+CHAR_WIDTH = 4
+CHAR_HEIGHT = 5
+PALETTE_START = 2
 PALETTE_END = 15
+
+# 0 = cursor outline
+# 7 = cursor fill
+# 6 = cursor fill shadow
 PALETTE = [
     0xFFFFFF, # WHITE - 0
-    0xA200FF, # PURPLE - 1
+    0xababab, # GRAY
+    0x7b27ab, # PURPLE - 2
+    0xdb2e9f, # MAGENTA
+    0x00ebb4, # TEAL
+    0x66e8e8, # CYAN
+    0x99540f, # BROWN
+    0xdb84d8, # PINK
+    0xffa312, # ORANGE
+    0x8979d4, # LAVENDER
+    0xfa4d3c, # RED
+    0x29a329, # DARK GREEN
+    0x83f789, # BRIGHT GREEN
+    0xf5f056, # YELLOW
+    0x3850eb, # DEEP BLUE
+    0xbfe4f5, # SKY BLUE - 15
+]
+OG_PALETTE = [
+    0xFFFFFF, # WHITE - 0
+    0xababab, # GRAY
+    0xA200FF, # PURPLE - 2
     0xFF0097, # MAGENTA
     0x008D6D, # TEAL
     0x8CBF26, # LIME
@@ -23,21 +48,37 @@ PALETTE = [
     0xF09609, # ORANGE
     0x1BA1E2, # BLUE
     0xE51400, # RED
-    0x339933, # GREEN - 11 (original limit)
-    0xa3ff78, # NEON GREEN
-    0xfcf50f, # YELLOW
-    0x788aff, # SKY BLUE
-    0xababab, # GRAY
-    0x8dd1f0, # SKY BLUE - 15
+    0x339933, # GREEN - 11
 ]
+PASTEL_PALETTE = [
+    0xFFFFFF, # WHITE - 0
+    0xababab, # GRAY
+    0xFDF39A,
+    0xFEC278,
+    0xF7977A,
+    0xF6B5C4,
+    0xD9D8EC,
+    0xC2AFD5,
+    0xA1BBE1,
+    0xD4EFFD,
+    0xC0E0C7,
+    0xF1F3E3,
+    0xC7B899,
+    0xFAB9AA,
+    0xBFD1DD,
+    # 0xCEE197,
+    0xB7DAF5,
+]
+# palette = PALETTE
+palette = PALETTE
 
 class Scene(Enum):
     GAME = 1
-    GAME_OVER = 2
+    TITLE = 2
 
 class App:
     def __init__(self):
-        pyxel.init(CANVAS_SIZE, CANVAS_SIZE, caption="metro", palette=PALETTE, scale=4)
+        pyxel.init(CANVAS_SIZE, CANVAS_SIZE, caption="metro", palette=palette, scale=4)
         pyxel.mouse(True)
 
         self.new_game()
@@ -46,13 +87,13 @@ class App:
 
     def new_game(self):
         global scene, game
-        scene = Scene.GAME
+        scene = Scene.TITLE
         game = Game()
 
     def update(self):
         scene_map = {
             Scene.GAME: game.update,
-            Scene.GAME_OVER: self.new_game
+            Scene.TITLE: Title().update
         }
         scene_map[scene]()
 
@@ -60,24 +101,48 @@ class App:
         pyxel.cls(0)
         scene_map = {
             Scene.GAME: game.draw,
-            Scene.GAME_OVER: lambda: None
+            Scene.TITLE: Title().draw
         }
         scene_map[scene]()
         
+class Title:
+    def __init__(self):
+        pass
+
+    def update(self):
+        if pyxel.btnr(pyxel.MOUSE_LEFT_BUTTON):
+            global scene
+            scene = Scene.GAME
+
+    def draw(self):
+        text = "metro"
+        text = "METRO"
+        pyxel.text(CANVAS_SIZE / 2 - (len(text) * CHAR_WIDTH) / 2, CANVAS_SIZE / 2 - CHAR_HEIGHT / 2, text, 1)
 
 class Game:
     def __init__(self):
         self.color_order = [c for c in range(PALETTE_START, PALETTE_END+1)]
         shuffle(self.color_order)
-        self.used_colors = [self.color_order[0]]
+        self.used_colors = self.color_order[:2]
         del self.color_order[0]
-        self.new_level()
+        del self.color_order[0]
+        self.level = Level(self.used_colors)
     
-    def new_level(self):
+    def prev_level(self):
+        # return to title
+        if len(self.used_colors) == 2:
+            global scene
+            scene = Scene.TITLE
+            return
+        
+        self.color_order.insert(0, self.used_colors.pop())
+        self.level = Level(self.used_colors)
+    
+    def next_level(self):
         # finished last level, restart
         if len(self.color_order) == 0:
             global scene
-            scene = Scene.GAME_OVER
+            scene = Scene.TITLE
             return
         
         self.used_colors.append(self.color_order[0])
@@ -138,11 +203,15 @@ class Tile:
         self.h = tile_size
 
     def update(self):
-        if (self.correct):
-            if (self.x <= pyxel.mouse_x and pyxel.mouse_x <= self.x + self.w and
-                self.y <= pyxel.mouse_y and pyxel.mouse_y <= self.y + self.h):
-                if pyxel.btnr(pyxel.MOUSE_LEFT_BUTTON):
-                    game.new_level()
+        # if hovering
+        if (self.x <= pyxel.mouse_x and pyxel.mouse_x <= self.x + self.w and
+            self.y <= pyxel.mouse_y and pyxel.mouse_y <= self.y + self.h):
+
+            if pyxel.btnr(pyxel.MOUSE_LEFT_BUTTON):
+                if self.correct:
+                    game.next_level()
+                else:
+                    game.prev_level()
 
     def draw(self):
         pyxel.rect(self.x, self.y, self.w, self.h, self.color)
