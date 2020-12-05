@@ -12,10 +12,6 @@ class App:
 
         pyxel.run(self.update, self.draw)
 
-    def new_game(self):
-        self.scene = Scene.TITLE
-        self.game = Game(self)
-
     def update(self):
         scene_map = {
             Scene.GAME: self.game.update,
@@ -30,6 +26,10 @@ class App:
             Scene.TITLE: Title(self).draw
         }
         scene_map[self.scene]()
+
+    def new_game(self):
+        self.scene = Scene.TITLE
+        self.game = Game(self)
         
 class Title:
     def __init__(self, app):
@@ -41,7 +41,6 @@ class Title:
 
     def draw(self):
         text = "metro"
-        text = "METRO"
         pyxel.text(CANVAS_SIZE / 2 - (len(text) * CHAR_WIDTH) / 2, CANVAS_SIZE / 2 - CHAR_HEIGHT / 2, text, 1)
 
 
