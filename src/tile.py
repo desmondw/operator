@@ -11,12 +11,13 @@ class Tile:
         self.grid_x = x
         self.grid_y = y
         self.correct = False
-        self.hovering = False
 
         self.x = CANVAS_PADDING + self.grid_x * (tile_size + tile_padding) + play_area_padding
         self.y = CANVAS_PADDING + self.grid_y * (tile_size + tile_padding) + play_area_padding
         self.w = tile_size
         self.h = tile_size
+
+        self.hovering = self.is_hovering()
 
     def update(self):
         if self.is_hovering():

@@ -1,8 +1,9 @@
 from enum import Enum, IntFlag, auto
 
 DEBUG = 1
-SOUND = 0
+SOUND = 1
 
+TITLE = 'metro'
 CANVAS_SIZE = 256
 CANVAS_PADDING = 20
 PLAY_AREA_SIZE = CANVAS_SIZE - CANVAS_PADDING * 2

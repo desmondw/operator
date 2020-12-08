@@ -5,7 +5,7 @@ from constants import *
 
 class App:
     def __init__(self):
-        pyxel.init(CANVAS_SIZE, CANVAS_SIZE, caption='metro', palette=PALETTE, scale=4)
+        pyxel.init(CANVAS_SIZE, CANVAS_SIZE, caption=TITLE, palette=PALETTE, scale=4)
         pyxel.load('../assets/metro.pyxres')
         pyxel.mouse(True)
 
@@ -58,7 +58,7 @@ class Title:
             self.app.game.level_n = 1
 
     def draw(self):
-        text = 'metro'
+        text = TITLE
         pyxel.text(CANVAS_SIZE / 2 - (len(text) * pyxel.FONT_WIDTH) / 2, CANVAS_SIZE / 2 - pyxel.FONT_HEIGHT / 2, text, 1)
 
 
