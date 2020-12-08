@@ -1,4 +1,4 @@
-from enum import Enum, auto
+from enum import Enum, IntFlag, auto
 
 DEBUG = 1
 SOUND = 0
@@ -8,10 +8,9 @@ CANVAS_PADDING = 20
 PLAY_AREA_SIZE = CANVAS_SIZE - CANVAS_PADDING * 2
 TILE_PADDING_MIN = 2
 TILE_PADDING_MAX = 16
-CHAR_WIDTH = 4
-CHAR_HEIGHT = 5
 PALETTE_START = 2
 PALETTE_END = 15
+LEVELS_PER_BATCH = PALETTE_END - PALETTE_START
 
 # 0 = cursor outline
 # 7 = cursor fill
@@ -34,39 +33,6 @@ PALETTE = [
     0x3850eb, # DEEP BLUE
     0xd6f3ff, # SKY BLUE - 15
 ]
-# OG_PALETTE = [
-#     0xFFFFFF, # WHITE - 0
-#     0xababab, # GRAY
-#     0xA200FF, # PURPLE - 2
-#     0xFF0097, # MAGENTA
-#     0x008D6D, # TEAL
-#     0x8CBF26, # LIME
-#     0xA05000, # BROWN
-#     0xE671B8, # PINK
-#     0xF09609, # ORANGE
-#     0x1BA1E2, # BLUE
-#     0xE51400, # RED
-#     0x339933, # GREEN - 11
-# ]
-# PASTEL_PALETTE = [
-#     0xFFFFFF, # WHITE - 0
-#     0xababab, # GRAY
-#     0xFDF39A,
-#     0xFEC278,
-#     0xF7977A,
-#     0xF6B5C4,
-#     0xD9D8EC,
-#     0xC2AFD5,
-#     0xA1BBE1,
-#     0xD4EFFD,
-#     0xC0E0C7,
-#     0xF1F3E3,
-#     0xC7B899,
-#     0xFAB9AA,
-#     0xBFD1DD,
-#     # 0xCEE197,
-#     0xB7DAF5,
-# ]
 
 class Sfx(Enum):
     TILE_HOVER = 0
@@ -78,3 +44,9 @@ class Sfx(Enum):
 class Scene(Enum):
     GAME = auto()
     TITLE = auto()
+
+# Modifiers to gameplay
+class Mod(IntFlag):
+    VANILLA = 0
+    HOVER_ONLY = auto() # tiles only show their color on hover
+    TEST = auto()

@@ -5,16 +5,11 @@ from enum import IntFlag, auto
 from level import Level
 from constants import *
 
-# Modifiers to gameplay
-class Mod(IntFlag):
-    HOVER_ONLY = auto() # tiles only show their color on hover
-    TEST = auto()
-
 LEVEL_MODS = [
-    0,
+    Mod.VANILLA,
     Mod.HOVER_ONLY,
-    # Mod.TEST,
-    # Mod.HOVER_ONLY | Mod.TEST,
+    Mod.TEST,
+    Mod.HOVER_ONLY | Mod.TEST,
 ]
 levels = []
 
@@ -55,6 +50,8 @@ class Game:
         #     # print(level['mods'])
 
     def goto_level(self, num):
+        if (num < 0 or len(levels) <= num): return False
+
         self.level_n = num
         level_data = levels[self.level_n - 1]
         self.level = Level(self.app, level_data['colors'], level_data['mods'])

@@ -38,17 +38,24 @@ class Tile:
 
     def draw(self):
         if self.is_hovering():
-            growth = math.ceil(self.app.game.level.get_tile_padding() / 4)
-            pyxel.rect(self.x - growth,
-                        self.y - growth,
-                        self.w + growth * 2,
-                        self.h + growth * 2,
-                        self.color)
+            self.draw_tile_hovering()
         else:
-            pyxel.rect(self.x, self.y, self.w, self.h, self.color)
+            self.draw_tile(self.app.game.level.check_for_mod(Mod.HOVER_ONLY))
 
         if DEBUG and self.correct:
             pyxel.rect(self.x, self.y, 6, 6, 1)
+    
+    def draw_tile(self, force_color=False):
+        color = force_color or self.color
+        pyxel.rect(self.x, self.y, self.w, self.h, color)
+
+    def draw_tile_hovering(self):
+        growth = math.ceil(self.app.game.level.get_tile_padding() / 4)
+        pyxel.rect(self.x - growth,
+                    self.y - growth,
+                    self.w + growth * 2,
+                    self.h + growth * 2,
+                    self.color)
 
     def mouse_over(self):
         if SOUND:

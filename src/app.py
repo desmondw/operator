@@ -14,6 +14,7 @@ class App:
         pyxel.run(self.update, self.draw)
 
     def update(self):
+        self.check_debug_input()
         scene_map = {
             Scene.GAME: self.game.update,
             Scene.TITLE: Title(self).update
@@ -35,6 +36,17 @@ class App:
     def new_game(self):
         self.scene = Scene.TITLE
         self.game = Game(self)
+
+    def check_debug_input(self):
+        if not DEBUG: return
+        key = 0
+        if pyxel.btnr(pyxel.KEY_1): key = 1
+        if pyxel.btnr(pyxel.KEY_2): key = 2
+        if pyxel.btnr(pyxel.KEY_3): key = 3
+        if pyxel.btnr(pyxel.KEY_4): key = 4
+        if key:
+            self.scene = Scene.GAME
+            self.game.goto_level(LEVELS_PER_BATCH * (key - 1) + 1)
         
 class Title:
     def __init__(self, app):
@@ -47,7 +59,7 @@ class Title:
 
     def draw(self):
         text = 'metro'
-        pyxel.text(CANVAS_SIZE / 2 - (len(text) * CHAR_WIDTH) / 2, CANVAS_SIZE / 2 - CHAR_HEIGHT / 2, text, 1)
+        pyxel.text(CANVAS_SIZE / 2 - (len(text) * pyxel.FONT_WIDTH) / 2, CANVAS_SIZE / 2 - pyxel.FONT_HEIGHT / 2, text, 1)
 
 
 app = App()
