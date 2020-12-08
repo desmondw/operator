@@ -26,8 +26,12 @@ class Tile:
 
             if pyxel.btnr(pyxel.MOUSE_LEFT_BUTTON):
                 if self.correct:
+                    if SOUND:
+                        pyxel.play(1, Sfx.TILE_CLICK_CORRECT.value)
                     self.app.game.next_level()
                 else:
+                    if SOUND:
+                        pyxel.play(1, Sfx.TILE_CLICK_WRONG.value)
                     self.app.game.prev_level()
         else:
             self.hovering = False
@@ -43,10 +47,12 @@ class Tile:
         else:
             pyxel.rect(self.x, self.y, self.w, self.h, self.color)
 
-        if DEBUGGING and self.correct:
-            pyxel.rect(self.x, self.y, 6, 6, 0)
+        if DEBUG and self.correct:
+            pyxel.rect(self.x, self.y, 6, 6, 1)
 
     def mouse_over(self):
+        if SOUND:
+            pyxel.play(0, Sfx.TILE_HOVER.value)
         pass # add click sound
     
     def is_hovering(self):

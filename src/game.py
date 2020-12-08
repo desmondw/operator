@@ -1,18 +1,30 @@
 import pyxel
+import random
+from enum import IntFlag, auto
 
+from level import Level
 from constants import *
-from level import *
+
+# Modifiers to gameplay
+class Mod(IntFlag):
+    HOVER_ONLY = auto() # tiles only show their color on hover
+    TEST = auto()
+
+LEVEL_MODS = [
+    0,
+    Mod.HOVER_ONLY,
+    # Mod.TEST,
+    # Mod.HOVER_ONLY | Mod.TEST,
+]
+levels = []
 
 class Game:
     def __init__(self, app):
         self.app = app
+        self.level_n = 0
 
-        self.color_order = [c for c in range(PALETTE_START, PALETTE_END+1)]
-        shuffle(self.color_order)
-        self.used_colors = self.color_order[:2]
-        del self.color_order[0]
-        del self.color_order[0]
-        self.shuffle_grid()
+        self.gen_levels()
+        self.goto_level(1)
 
     def update(self):
         self.level.update()
@@ -20,25 +32,47 @@ class Game:
     def draw(self):
         self.level.draw()
     
+    def gen_levels(self):
+        for mod_set in LEVEL_MODS:
+            color_order = [c for c in range(PALETTE_START, PALETTE_END+1)]
+            random.shuffle(color_order)
+
+            for i in range(2, len(color_order)+1):
+                levels.append({
+                    'mods': mod_set,
+                    'colors': color_order[:i]
+                })
+        
+        # Example checking of mods:
+
+        # for level in levels:
+        #     # print(level['mods'])
+        #     text = ''
+        #     if level['mods'] is 0: text += 'vanilla '
+        #     if level['mods'] & Mod.HOVER_ONLY: text += 'hover '
+        #     if level['mods'] & Mod.TEST: text += 'test '
+        #     print(text)
+        #     # print(level['mods'])
+
+    def goto_level(self, num):
+        self.level_n = num
+        level_data = levels[self.level_n - 1]
+        self.level = Level(self.app, level_data['colors'], level_data['mods'])
+    
     def prev_level(self):
-        # return to title
-        if len(self.used_colors) == 2:
+        # return to title if on first level
+        if self.level_n == 1:
             self.app.scene = Scene.TITLE
-            self.shuffle_grid()
+            self.goto_level(1)
             return
         
-        self.color_order.insert(0, self.used_colors.pop())
-        self.shuffle_grid()
+        self.goto_level(self.level_n - 1)
     
     def next_level(self):
-        # finished last level, restart
-        if len(self.color_order) == 0:
+        # send to title after complete
+        if self.level_n == len(levels) - 1:
             self.app.new_game()
             return
         
-        self.used_colors.append(self.color_order[0])
-        del self.color_order[0]
-        self.shuffle_grid()
+        self.goto_level(self.level_n + 1)
     
-    def shuffle_grid(self):
-        self.level = Level(self.app, self.used_colors)

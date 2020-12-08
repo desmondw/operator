@@ -1,11 +1,12 @@
 import pyxel
 
+from game import Game
 from constants import *
-from game import *
 
 class App:
     def __init__(self):
-        pyxel.init(CANVAS_SIZE, CANVAS_SIZE, caption="metro", palette=PALETTE, scale=4)
+        pyxel.init(CANVAS_SIZE, CANVAS_SIZE, caption='metro', palette=PALETTE, scale=4)
+        pyxel.load('../assets/metro.pyxres')
         pyxel.mouse(True)
 
         self.new_game()
@@ -27,6 +28,10 @@ class App:
         }
         scene_map[self.scene]()
 
+        if DEBUG:
+            text = f'level {self.game.level_n}'
+            pyxel.text(0,0, text, 1)
+
     def new_game(self):
         self.scene = Scene.TITLE
         self.game = Game(self)
@@ -38,9 +43,10 @@ class Title:
     def update(self):
         if pyxel.btnr(pyxel.MOUSE_LEFT_BUTTON):
             self.app.scene = Scene.GAME
+            self.app.game.level_n = 1
 
     def draw(self):
-        text = "metro"
+        text = 'metro'
         pyxel.text(CANVAS_SIZE / 2 - (len(text) * CHAR_WIDTH) / 2, CANVAS_SIZE / 2 - CHAR_HEIGHT / 2, text, 1)
 
 

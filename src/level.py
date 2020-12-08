@@ -1,11 +1,11 @@
 import pyxel
-from random import *
+import random
 
+from tile import Tile
 from constants import *
-from tile import *
 
 class Level:
-    def __init__(self, app, colors):
+    def __init__(self, app, colors, mods=[]):
         self.app = app
 
         self.grid = []
@@ -21,7 +21,7 @@ class Level:
             row = []
             for j in range(self.grid_size):
                 # add a random color tile (excluding the new color)
-                tile = Tile(self.app, choice(colors[:-1]), i, j, tile_size, tile_padding, play_area_padding)
+                tile = Tile(self.app, random.choice(colors[:-1]), i, j, tile_size, tile_padding, play_area_padding)
                 row.append(tile)
             self.grid.append(row)
 
@@ -29,8 +29,8 @@ class Level:
         # change one of the tiles to the new color
         tile = Tile(self.app,
                     colors[-1],
-                    randrange(self.grid_size),
-                    randrange(self.grid_size),
+                    random.randrange(self.grid_size),
+                    random.randrange(self.grid_size),
                     tile_size,
                     tile_padding,
                     play_area_padding)
