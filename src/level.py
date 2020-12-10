@@ -12,6 +12,10 @@ class Level:
         self.grid_size = len(colors)
         self.colors = colors
         self.mods = mods
+        self.animating_in = True
+        self.animating_out = False
+        self.app.input_enabled = False
+        self.post_animation_level = 0
 
         # determine values for drawing/collision
         self.tile_padding = self.get_tile_padding()
@@ -36,6 +40,16 @@ class Level:
         self.validate_level()
 
     def update(self):
+        if self.animating_in and self.grid[0][0].w >= self.grid[0][0]._w:
+            self.animating_in = False
+            self.app.input_enabled = True
+        if self.animating_out and self.grid[0][0].w <= 0:
+            self.app.input_enabled = True
+            if self.post_animation_level == -1:
+                self.app.game.prev_level()
+            else:
+                self.app.game.next_level()
+
         for row in self.grid:
             for tile in row:
                 tile.update()
@@ -43,7 +57,7 @@ class Level:
     def draw(self):
         for row in self.grid:
             for tile in row:
-                tile.draw()
+                tile.draw(self.animating_in, self.animating_out, self.grid[0][0]._w / 16)
 
     def get_tile_padding(self):
         return max(TILE_PADDING_MIN, min(TILE_PADDING_MAX, PLAY_AREA_SIZE / (self.grid_size - 1) * .1)) // 1

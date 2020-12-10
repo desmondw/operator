@@ -1,7 +1,7 @@
 from enum import Enum, IntFlag, auto
 
-DEBUG = 1
-SOUND = 1
+DEBUG = 0
+SOUND = 0
 
 TITLE = 'metro'
 CANVAS_SIZE = 256
@@ -21,7 +21,7 @@ PALETTE = [
     0xababab, # GRAY
     0x7b27ab, # PURPLE - 2
     0xdb2e9f, # MAGENTA
-    0x29ffb8, # TEAL 
+    0x29ffb8, # TEAL
     0x66e8e8, # CYAN
     0x99540f, # BROWN
     0xdb84d8, # PINK

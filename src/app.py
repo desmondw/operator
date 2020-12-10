@@ -8,6 +8,7 @@ class App:
         pyxel.init(CANVAS_SIZE, CANVAS_SIZE, caption=TITLE, palette=PALETTE, scale=4)
         pyxel.load('../assets/metro.pyxres')
         pyxel.mouse(True)
+        self.input_enabled = True
 
         self.new_game()
 
@@ -33,6 +34,14 @@ class App:
             text = f'level {self.game.level_n}'
             pyxel.text(0,0, text, 1)
 
+    @property
+    def input_enabled(self):
+        return self._input_enabled
+
+    @input_enabled.setter
+    def input_enabled(self, value):
+        self._input_enabled = value
+
     def new_game(self):
         self.scene = Scene.TITLE
         self.game = Game(self)
@@ -53,7 +62,7 @@ class Title:
         self.app = app
 
     def update(self):
-        if pyxel.btnr(pyxel.MOUSE_LEFT_BUTTON):
+        if pyxel.btnp(pyxel.MOUSE_LEFT_BUTTON):
             self.app.scene = Scene.GAME
             self.app.game.level_n = 1
 
