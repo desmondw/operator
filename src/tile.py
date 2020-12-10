@@ -35,7 +35,10 @@ class Tile:
                 self.app.game.level.animating_out = True
                 if self.correct:
                     if SOUND:
-                        pyxel.play(1, Sfx.TILE_CLICK_CORRECT.value)
+                        if self.app.game.level_n == len(self.app.game.levels)-1:
+                            pyxel.play(1, Sfx.GAME_WON.value)
+                        else:
+                            pyxel.play(1, Sfx.TILE_CLICK_CORRECT.value)
                     self.app.game.level.post_animation_level = 1
                 else:
                     if SOUND:
@@ -74,7 +77,7 @@ class Tile:
             pyxel.rect(self.x, self.y, self.w, self.h, color)
 
         if DEBUG and self.correct:
-            pyxel.rect(self.x, self.y, 6, 6, 1)
+            pyxel.rect(self.x, self.y, 6, 6, 0)
     
     def mouse_over(self):
         if SOUND:

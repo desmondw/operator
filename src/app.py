@@ -49,6 +49,9 @@ class App:
     def check_debug_input(self):
         if not DEBUG: return
         key = 0
+        if pyxel.btnr(pyxel.KEY_0):
+            self.scene = Scene.GAME
+            self.game.goto_level(12)
         if pyxel.btnr(pyxel.KEY_1): key = 1
         if pyxel.btnr(pyxel.KEY_2): key = 2
         if pyxel.btnr(pyxel.KEY_3): key = 3
@@ -69,6 +72,11 @@ class Title:
     def draw(self):
         text = TITLE
         pyxel.text(CANVAS_SIZE / 2 - (len(text) * pyxel.FONT_WIDTH) / 2, CANVAS_SIZE / 2 - pyxel.FONT_HEIGHT / 2, text, 1)
+
+        # credits
+        # pyxel.text(1, CANVAS_SIZE - (pyxel.FONT_HEIGHT + 1) * 3, 'Made by:', 1)
+        pyxel.text(1, CANVAS_SIZE - (pyxel.FONT_HEIGHT + 1) * 2, '@DesmondWeindorf', 1)
+        pyxel.text(1, CANVAS_SIZE - (pyxel.FONT_HEIGHT + 1) * 1, 'desmondw.com', 1)
 
 
 app = App()

@@ -1,9 +1,9 @@
 from enum import Enum, IntFlag, auto
 
 DEBUG = 0
-SOUND = 0
+SOUND = 1
 
-TITLE = 'metro'
+TITLE = 'operator'
 CANVAS_SIZE = 256
 CANVAS_PADDING = 20
 PLAY_AREA_SIZE = CANVAS_SIZE - CANVAS_PADDING * 2
@@ -39,7 +39,7 @@ class Sfx(Enum):
     TILE_HOVER = 0
     TILE_CLICK_CORRECT = 1
     TILE_CLICK_WRONG = 2
-    TILE_SHUFFLE = 3
+    GAME_WON = 3
 
 
 class Scene(Enum):
