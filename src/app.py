@@ -9,13 +9,14 @@ class App:
         pyxel.load('../assets/metro.pyxres')
         pyxel.mouse(True)
         self.input_enabled = True
+        self.sound = bool(SOUND)
 
         self.new_game()
 
         pyxel.run(self.update, self.draw)
 
     def update(self):
-        self.check_debug_input()
+        self.check_input()
         scene_map = {
             Scene.GAME: self.game.update,
             Scene.TITLE: Title(self).update
@@ -46,6 +47,12 @@ class App:
         self.scene = Scene.TITLE
         self.game = Game(self)
 
+    def check_input(self):
+        self.check_debug_input()
+        if pyxel.btnr(pyxel.KEY_S):
+            self.sound = not self.sound
+
+
     def check_debug_input(self):
         if not DEBUG: return
         key = 0
@@ -73,8 +80,11 @@ class Title:
         text = TITLE
         pyxel.text(CANVAS_SIZE / 2 - (len(text) * pyxel.FONT_WIDTH) / 2, CANVAS_SIZE / 2 - pyxel.FONT_HEIGHT / 2, text, 1)
 
+        # controls
+        text = '[s] toggle sound'
+        pyxel.text(CANVAS_SIZE - len(text) * pyxel.FONT_WIDTH - 1, CANVAS_SIZE - (pyxel.FONT_HEIGHT + 1) * 1, text, 1)
+
         # credits
-        # pyxel.text(1, CANVAS_SIZE - (pyxel.FONT_HEIGHT + 1) * 3, 'Made by:', 1)
         pyxel.text(1, CANVAS_SIZE - (pyxel.FONT_HEIGHT + 1) * 2, '@DesmondWeindorf', 1)
         pyxel.text(1, CANVAS_SIZE - (pyxel.FONT_HEIGHT + 1) * 1, 'desmondw.com', 1)
 
