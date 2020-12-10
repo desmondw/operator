@@ -24,20 +24,6 @@ class Level:
 
         # generate all tiles (colors, grid position)
         self.gen_tiles()
-        
-        # change one of the tiles to the new color
-        tile = Tile(self.app,
-                    colors[-1],
-                    random.randrange(self.grid_size),
-                    random.randrange(self.grid_size),
-                    self.tile_size,
-                    self.tile_padding,
-                    self.play_area_padding)
-        tile.correct = True
-        self.grid[tile.grid_x][tile.grid_y] = tile
-
-        # verify that there are no 'fail' colors with only one spot, or fix
-        self.validate_level()
 
     def update(self):
         if self.animating_in and self.grid[0][0].w >= self.grid[0][0]._w:
@@ -72,23 +58,40 @@ class Level:
         return (PLAY_AREA_SIZE - ((tile_size + tile_padding) * self.grid_size - tile_padding)) // 2
     
     def gen_tiles(self):
+        # assure the target color is in there
+        color_pile = [self.colors[-1]]
+        for color in self.colors[:-1]:
+            # assure each color has at least 3 tiles
+            color_pile += [color]*2
+        while len(color_pile) < self.grid_size**2:
+            # add a random color tile (excluding the new color)
+            color_pile.append(random.choice(self.colors[:-1]))
+        random.shuffle(color_pile)
+
+        if DEBUG:
+            color_map = {}
+            for c in color_pile:
+                if not c in color_map:
+                    color_map[c] = 0
+                color_map[c] +=1
+            print(color_map)
+
         for i in range(self.grid_size):
             row = []
             for j in range(self.grid_size):
-                # add a random color tile (excluding the new color)
+                c = color_pile.pop()
                 tile = Tile(self.app,
-                            random.choice(self.colors[:-1]),
+                            c,
                             i,
                             j,
                             self.tile_size,
                             self.tile_padding,
                             self.play_area_padding)
+                if c == self.colors[-1]:
+                    tile.correct = True
+
                 row.append(tile)
             self.grid.append(row)
-    
+
     def check_for_mod(self, mod):
         return self.mods & mod
-
-    def validate_level(self):
-        # TODO
-        pass
