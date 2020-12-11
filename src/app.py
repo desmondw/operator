@@ -6,7 +6,7 @@ from constants import *
 class App:
     def __init__(self):
         pyxel.init(CANVAS_SIZE, CANVAS_SIZE, caption=TITLE, palette=PALETTE, scale=4)
-        pyxel.load('../assets/metro.pyxres')
+        pyxel.load('sounds.pyxres')
         pyxel.mouse(True)
         self.input_enabled = True
         self.sound = bool(SOUND)

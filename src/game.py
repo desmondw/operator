@@ -5,13 +5,6 @@ from enum import IntFlag, auto
 from level import Level
 from constants import *
 
-LEVEL_MODS = [
-    Mod.VANILLA,
-    # Mod.HOVER_ONLY,
-    # Mod.TEST,
-    # Mod.HOVER_ONLY | Mod.TEST,
-]
-
 class Game:
     def __init__(self, app):
         self.app = app
@@ -37,17 +30,6 @@ class Game:
                     'mods': mod_set,
                     'colors': color_order[:i]
                 })
-        
-        # Example checking of mods:
-
-        # for level in levels:
-        #     # print(level['mods'])
-        #     text = ''
-        #     if level['mods'] is 0: text += 'vanilla '
-        #     if level['mods'] & Mod.HOVER_ONLY: text += 'hover '
-        #     if level['mods'] & Mod.TEST: text += 'test '
-        #     print(text)
-        #     # print(level['mods'])
 
     def goto_level(self, num):
         if (num < 0 or len(self.levels) <= num): return False

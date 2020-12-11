@@ -51,3 +51,10 @@ class Mod(IntFlag):
     VANILLA = 0
     HOVER_ONLY = auto() # tiles only show their color on hover
     TEST = auto()
+
+LEVEL_MODS = [
+    Mod.VANILLA,
+    # Mod.HOVER_ONLY,
+    # Mod.TEST,
+    # Mod.HOVER_ONLY | Mod.TEST,
+]
